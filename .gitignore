@@ -38,3 +38,7 @@ gulp.1
 sandbox
 test/out-fixtures/*
 test/watch-*.txt
+
+# auto-added by meta-ops
+node_modules/
+Thumbs.db
