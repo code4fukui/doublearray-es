@@ -1,74 +1,92 @@
-Double-Array
-============
+# doublearray-es
 
-JavaScript implementation of Double-Array trie.
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
 
+JavaScript implementation of a Double-Array trie for efficient key-value storage and prefix-based searching.
 
-Usage
------
+## Features
 
+-   Word registration with key-value pairs
+-   Exact match lookup (`contain`, `lookup`)
+-   Common prefix search (`commonPrefixSearch`)
+-   Buffer serialization/deserialization for persistent storage
 
-### Build
+## Requirements
 
+A modern JavaScript environment supporting ES modules (e.g., modern browsers or Node.js).
 
-Browser example
+## Usage
 
-    import { doublearray } from "https://code4fukui.github.io/doublearray-es/doublearray.js";
+### Build a Trie
 
-    var words = [
-        { k: 'a', v: 1 },
-        { k: 'abc', v: 2 },
-        { k: '奈良', v: 3 },
-        { k: '奈良先端', v: 4 },
-        { k: '奈良先端科学技術大学院大学', v: 5 }
-    ];
+You can build a trie from an array of key-value objects or by chaining `append` calls.
 
-    var trie = doublearray.builder().build(words);
+**From an array:**
 
+```javascript
+import { doublearray } from "https://code4fukui.github.io/doublearray-es/doublearray.js";
 
-Method chaining
+const words = [
+    { k: 'a', v: 1 },
+    { k: 'abc', v: 2 },
+    { k: '奈良', v: 3 },
+    { k: '奈良先端', v: 4 },
+    { k: '奈良先端科学技術大学院大学', v: 5 }
+];
 
-    var trie = doublearray
-           .builder()
-           .append('a', 1)
-           .append('abc', 2)
-           .append('奈良', 3)
-           .append('奈良先端', 4)
-           .append('奈良先端科学技術大学院大学', 5)
-           .build();
+const trie = doublearray.builder().build(words);
+```
 
+**Using method chaining:**
 
-### Search
+```javascript
+import { doublearray } from "https://code4fukui.github.io/doublearray-es/doublearray.js";
 
-    trie.contain('a');  // -> true
+const trie = doublearray
+       .builder()
+       .append('a', 1)
+       .append('abc', 2)
+       .append('奈良', 3)
+       .append('奈良先端', 4)
+       .append('奈良先端科学技術大学院大学', 5)
+       .build();
+```
 
-    trie.lookup('abc');  // -> 2
+### Search Operations
 
-    trie.commonPrefixSearch('奈良先端科学技術大学院大学');
-    // -> [ { v: 3, k: '奈良' },
-    //      { v: 4, k: '奈良先端' },
-    //      { v: 5, k: '奈良先端科学技術大学院大学' } ]
+```javascript
+trie.contain('a');
+// -> true
 
+trie.lookup('abc');
+// -> 2
 
-### Load
+trie.commonPrefixSearch('奈良先端科学技術大学院大学');
+// -> [ { v: 3, k: '奈良' },
+//      { v: 4, k: '奈良先端' },
+//      { v: 5, k: '奈良先端科学技術大学院大学' } ]
+```
 
-Get BASE or CHECK buffer as Int32Array of typed array
+### Save and Load
 
-    var base_buffer = trie.bc.getBaseBuffer();
-    var check_buffer = trie.bc.getCheckBuffer();
+You can extract the internal buffers (`BASE` and `CHECK` arrays) to save the trie's state and load it back later.
 
-Load and create a new DoubleArray object from original buffers
+**Save:** Get the buffers as `Int32Array` typed arrays.
 
-    var loaded_trie = doublearray.load(base_buffer, check_buffer);
+```javascript
+const base_buffer = trie.bc.getBaseBuffer();
+const check_buffer = trie.bc.getCheckBuffer();
+```
 
-### Todo
+**Load:** Create a new `DoubleArray` instance from the buffers.
 
-test for ES modules
+```javascript
+const loaded_trie = doublearray.load(base_buffer, check_buffer);
 
-Copyright and license
----------------------
+// The loaded trie is ready for searching
+console.log(loaded_trie.lookup('奈良先端')); // -> 4
+```
 
-Copyright (c) 2014 Takuya Asano All Rights Reserved.
+## License
 
-This software is released under the MIT License.
-See LICENSE.txt
+MIT License — see [LICENSE](LICENSE).
